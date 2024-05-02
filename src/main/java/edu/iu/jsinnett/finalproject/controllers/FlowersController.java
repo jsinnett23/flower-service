@@ -43,11 +43,11 @@ public class FlowersController {
     public ResponseEntity<?> getImage(@PathVariable int id) {
         try {
             byte[] image = flowersFileRepository.getImage(id);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .contentType(MediaType.IMAGE_PNG)
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
                     .body(image);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.notFound().build();  // Return 404 if the image isn't found
         }
     }
 
