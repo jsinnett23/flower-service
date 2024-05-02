@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 @Repository
 public class FlowersFileRepository {
     private String IMAGES_FOLDER_PATH = "flowers/images/";
+    private final Path rootLocation = Paths.get("flowers/images/");
     public byte[] getImage(int id) throws IOException {
         String fileExtension = ".jpeg";
         Path path = Paths.get(IMAGES_FOLDER_PATH
@@ -29,5 +30,13 @@ public class FlowersFileRepository {
         System.out.println("The file " + path + " was saved successfully.");
         file.transferTo(path);
         return true;
+    }
+
+    public FlowersFileRepository() {
+        try {
+            Files.createDirectories(rootLocation);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not initialize storage", e);
+        }
     }
 }
