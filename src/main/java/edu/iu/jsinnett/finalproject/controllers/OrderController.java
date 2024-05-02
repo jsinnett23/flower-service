@@ -3,31 +3,66 @@ package edu.iu.jsinnett.finalproject.controllers;
 
 import edu.iu.jsinnett.finalproject.model.Order;
 import edu.iu.jsinnett.finalproject.repository.OrderRepository;
+import edu.iu.jsinnett.finalproject.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/orders")
 public class OrderController {
 
-    private final OrderRepository orderRepository;
+    OrderService orderService;
 
-    public OrderController(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     @PostMapping
-    public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
-        Order savedOrder = orderRepository.save(order);
-        return new ResponseEntity<>(savedOrder, HttpStatus.CREATED);
+    public int add(@RequestBody Order order) {
+        String username = getTheCurrentLoggedInCustomer();
+        order.setCustomerUserName(username);
+        return orderService.add(order);
     }
 
-    @GetMapping("/{customerId}")
-    public ResponseEntity<Iterable<Order>> getOrdersByCustomer(@PathVariable int customerId) {
-        // Assuming you have a method to find orders by customer ID
-        Iterable<Order> orders = orderRepository.findByCustomerId(customerId);
-        return new ResponseEntity<>(orders, HttpStatus.OK);
+    private String getTheCurrentLoggedInCustomer() {
+        Object principal = SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        String username = "";
+        if(principal instanceof Jwt) {
+            username = ((Jwt) principal).getSubject();
+        }
+        return username;
     }
+
+    @GetMapping
+    public ResponseEntity<List<Order>> findAllByCustomer() {
+        String username = getTheCurrentLoggedInCustomer();
+        System.out.println(username);
+        if(username.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        List<Order> orders = orderService.findAllByCustomer(username);
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<Order>> search(@RequestBody Order order) {
+        String username = getTheCurrentLoggedInCustomer();
+        System.out.println(username);
+        if(username.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } else {
+            order.setCustomerUserName(username);
+        }
+        List<Order> orders = orderService.search(order);
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
+    }
+
+
 }

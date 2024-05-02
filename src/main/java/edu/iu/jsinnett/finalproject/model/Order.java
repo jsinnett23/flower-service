@@ -11,50 +11,54 @@ import jakarta.persistence.Table;
 public class Order {
     @Id
     @GeneratedValue
-    private int id;
-    private int customerId;  // This should be a foreign key linking to the Customer table
-    private int flowerId;    // This should be a foreign key linking to the Flower table
-    private String status;   // e.g., submitted, processed, delivered
+    private Integer id;
 
-    public Order() {}
+    private Integer flowerId;
+    private String recipientName;
+    private Float totalCost;
+    private String customerUserName;
 
-    public Order(int id, int customerId, int flowerId, String status) {
-        this.id = id;
-        this.customerId = customerId;
-        this.flowerId = flowerId;
-        this.status = status;
+
+    public Order() {
     }
 
-    // Getters and setters
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-
-    public int getFlowerId() {
+    public Integer getFlowerId() {
         return flowerId;
     }
 
-    public void setFlowerId(int flowerId) {
+    public void setFlowerId(Integer flowerId) {
         this.flowerId = flowerId;
     }
 
-    public String getStatus() {
-        return status;
+    public String getRecipientName() {
+        return recipientName;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
+    }
+
+    public Float getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(Float totalCost) {
+        this.totalCost = totalCost;
+    }
+
+    public String getCustomerUserName() {
+        return customerUserName;
+    }
+
+    public void setCustomerUserName(String customerUserName) {
+        this.customerUserName = customerUserName;
     }
 }
